@@ -1,8 +1,19 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import permissions
+from django.contrib.auth.models import User
 
 from .models import UserProfile
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileSerializer, UserSerializer
+
+class GetUsersView(APIView):
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, format=None):
+        users = User.objects.all()
+
+        users = UserSerializer(users, many=True)
+        return Response(users.data)
 
 class GetUserProfileView(APIView):
     def get(self, request, format=None):

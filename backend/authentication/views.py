@@ -7,7 +7,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.utils.decorators import method_decorator
 
 from user_profile.models import UserProfile
-from .serializers import UserSerializer
 
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
@@ -65,7 +64,7 @@ class LoginView(APIView):
 
             if user is not None:
                 auth.login(request, user)
-                return Response({'success': 'User logged in', 'username': username})
+                return Response({'success': 'User logged in'})
             else:
                 return Response({'error': 'Invalid credentials'})
         except:
@@ -98,17 +97,8 @@ class DeleteAccountView(APIView):
     def delete(self, request, format=None):
         user = self.request.user
         try:
-            user = User.objects.filter(id=user.id).delete()
+            User.objects.filter(id=user.id).delete()
             return Response({'success': 'User deleted'})
         except:
             return Response({'error': 'Something went wrong'})
         
-
-class GetUsersView(APIView):
-    permission_classes = (permissions.AllowAny, )
-
-    def get(self, request, format=None):
-        users = User.objects.all()
-
-        users = UserSerializer(users, many=True)
-        return Response(users.data)
